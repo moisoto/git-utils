@@ -11,6 +11,16 @@ if [[ ! -f $1 ]]; then
 fi
 
 # Remove trailing whitespaces from each line
-gsed -i 's/[[:blank:]]*$//' "$1"
+if which gsed &> /dev/null; then
+  gsed -i 's/[[:blank:]]*$//' "$1"
+else
+  if which perl &> /dev/null; then
+    perl -i -pe's/[[:blank:]]*$//' "$1"
+  else
+    echo "Please install gsed or perl to be able to use this command"
+    exit 3
+  fi
+fi
+
 echo "Removed trailing whitespaces for $1"
 exit 0
