@@ -13,7 +13,6 @@ In order to use these scripts open a terminal Window and run the following comma
 ```shell
 cd ~/
 git clone https://github.com/moisoto/git-utils.git
-chmod 744 ~/git-utils/*.sh
 ~/git-utils/set_aliases.sh
 ```
 
