@@ -1,14 +1,27 @@
 # git-utils
 
-I'll upload here any script that I make for use when working with git
+These are some utilities for use when working with git that may be usefull to other people.
 
 The scripts are not intended to be called directly, they are called by git aliases you should define by running the included script called `set_aliases.sh`.
 
-It is assumed you have the other scripts located on the folder ~/git, also please remember to give the scripts execution permissions. I will include an install script on a later date.
+It is assumed you have the scripts located on the folder ~/git-utils (cloning the repository on your home directory will acomplish this).
 
-The following sections describe what the corresponding git commands will do. 
+## Downloading and enabling aliases
 
-## git df
+In order to use these scripts open a terminal Window and run the following commands:
+
+```shell
+cd ~/
+git clone https://github.com/moisoto/git-utils.git
+chmod 744 ~/git-utils/*.sh
+~/git-utils/set_aliases.sh
+```
+
+## Commands
+
+The following sections describe what the corresponding git commands will do:
+
+### git df
 
 Sintax: `git df filename [filename2] ...` 
 
@@ -16,7 +29,7 @@ This command will output a git diff of a given file that will show the entire fi
 
 You should specify the filename(s) but it works for more than one file (you can use wilcards or list them manually).
 
-## git tt
+### git tt
 
 Sintax `git tt filename`
 
