@@ -45,3 +45,9 @@ Sintax: `git drop`
 This will drop all changes to tracked files on the working directory. 
 Any uncomitted changes to tracked files will be reverted to the state of the last commit.
 This includes files that are staged for commit as well as those that are modified but not staged.
+
+### git clog
+
+Sintax: `git clog`
+
+My preferred format for git log. Shows filenames, the short hash & commit date.
