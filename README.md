@@ -30,10 +30,18 @@ You should specify the filename(s) but it works for more than one file (you can 
 
 ### git tt
 
-Sintax `git tt filename`
+Sintaxi: `git tt filename`
 
 This will trim all trailing spaces from a given regular file.
 
 Some editors will leave trailing spaces after the end-of-line as you format your commands, this will normally have no ill effects but when running the git diff command it will show these trailing spaces in red. This is just to let you know there are spaces there.
 
-If it bothers you to see these ugly red marks, just use this command on your file ( yes, this command is for OCD people like me ;] ).
+If it bothers you to see these ugly red marks, just use this command on your file.
+
+### git drop
+
+Sintax: `git drop`
+
+This will drop all changes to tracked files on the working directory. 
+Any uncomitted changes to tracked files will be reverted to the state of the last commit.
+This includes files that are staged for commit as well as those that are modified but not staged.
