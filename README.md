@@ -56,7 +56,7 @@ My preferred format for git log. Shows filenames, the short hash & commit date.
 
 Sintax: `git undo`
 
-This command will create a new that will effectively revert to the commit that was made before the current one.
+This command will create a new commit that will effectively revert to the commit that was made before the current one.
 
 ### git hundo
 
