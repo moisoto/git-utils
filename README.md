@@ -74,6 +74,7 @@ Syntax: `gcommit`
 
 Use this interactive command when you want to make a commit with an additional detailed multiline description.
 
+The format used for the commit message is based on the [conventional commits specification](https://www.conventionalcommits.org/en/v1.0.0/#summary).
 You will be asked for the following:
 
 - A **_category_** for the type of change you are commiting (Fix, Feature, Documentation, Revert, etc).
