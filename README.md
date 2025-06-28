@@ -22,7 +22,7 @@ The following sections describe what the corresponding git commands will do:
 
 ### git df
 
-Sintax: `git df filename [filename2] ...` 
+Syntax: `git df filename [filename2] ...`
 
 This command will output a git diff of a given file that will show the entire file instead of just the context around the file differences.
 
@@ -30,7 +30,7 @@ You should specify the filename(s) but it works for more than one file (you can 
 
 ### git tt
 
-Sintaxi: `git tt filename`
+Syntax: `git tt filename`
 
 This will trim all trailing spaces from a given regular file.
 
@@ -40,30 +40,50 @@ If it bothers you to see these ugly red marks, just use this command on your fil
 
 ### git drop
 
-Sintax: `git drop`
+Syntax: `git drop`
 
-This will drop all changes to tracked files on the working directory. 
+This will drop all changes to tracked files on the working directory.
 Any uncomitted changes to tracked files will be reverted to the state of the last commit.
 This includes files that are staged for commit as well as those that are modified but not staged.
 
 ### git clog
 
-Sintax: `git clog`
+Syntax: `git clog`
 
 My preferred format for git log. Shows filenames, the short hash & commit date.
 
 ### git undo
 
-Sintax: `git undo`
+Syntax: `git undo`
 
 This command will create a new commit that will effectively revert to the commit that was made before the current one.
 
 ### git hundo
 
-Sintax: `git hundo`
+Syntax: `git hundo`
 
 This command will undo the last commit. Use with care. The working directory, the staging area and the commit history will be reset to the commit before the last one.
 
 Do this ONLY when the commit has not been pushed to a remote. Otherwise you will have problems pushing to the remote, since the last commit on the remote will not exist in your local copy.
 
-I'm including this here for rare cases where you don't want to have the last commit on the commit history. I STRONGLY recommend the use of `git undo` instead for most cases.
+I'm including this here for rare cases where you don't want to have the last commit on the commit history. For most cases the use of `git undo` is STRONGLY recommended instead.
+
+### gcommit
+
+Syntax: `gcommit`
+
+Use this interactive command when you want to make a commit with an additional detailed multiline description.
+
+You will be asked for the following:
+
+- A **_category_** for the type of change you are commiting (Fix, Feature, Documentation, Revert, etc).
+- A **_scope_** (optional) to specify what you are modifying.
+- A **_short description_** with more details about the change. You can enter multiple lines by pressing **crtl+j**.
+- An optional **detailed description**.
+
+After entering this information, it will be shown for review and you will be asked to confirm if you wish to perform the commit.
+
+> **Note:**
+>     This command requires gum to be installed on your system.<br>
+>     Please visit https://github.com/charmbracelet/gum for more details.<br>
+>     If you have homebrew on macOS it can be installed by typing `brew install gum`
