@@ -6,13 +6,11 @@
 # description of the message and uses the values provided. as the summary and
 # details of the message.
 #
-# If you want to add a simpler version of this script to your dotfiles, use:
-#
-# alias gcm='git commit -m "$(gum input)" -m "$(gum write)"'
-
-# if [ -z "$(git status -s -uno | grep -v '^ ' | awk '{print $2}')" ]; then
-#     gum confirm "Stage all?" && git add .
-# fi
+# Credits:
+#    This script is a modified version of the sample script included at
+#    https://github.com/charmbracelet/gum/blob/main/examples/commit.sh
+#    The commit style used by this script is based on the Conventional Commits
+#    specification (https://www.conventionalcommits.org/en/v1.0.0/#summary)
 
 if ! command -v gum &> /dev/null; then
   printf "\033[38;2;255;85;85m✖ The gum utility is required to run this script.\033[0m\n" >&2
@@ -48,7 +46,7 @@ if [ -n "$DESCRIPTION" ] ; then
   gum style --foreground 255 --border-foreground 245 --border normal "$DESCRIPTION"
   # Commit these changes if user confirms
   gum confirm "Commit changes?" && git commit -m "$SUMMARY" -m "$DESCRIPTION"
-else 
+else
   # Commit these changes if user confirms
   gum confirm "Commit changes?" && git commit -m "$SUMMARY"
 fi
