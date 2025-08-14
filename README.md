@@ -52,6 +52,12 @@ Syntax: `git clog`
 
 My preferred format for git log. Shows filenames, the short hash & commit date.
 
+### git slog
+
+Syntax: `git slog`
+
+A custom git log with stats info and graph format.
+
 ### git undo
 
 Syntax: `git undo`
