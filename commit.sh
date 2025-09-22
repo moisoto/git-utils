@@ -45,13 +45,14 @@ echo "$SUMMARY"
 if [ -n "$DESCRIPTION" ] ; then
   gum style --foreground 255 --border-foreground 245 --border normal "$DESCRIPTION"
   # Commit these changes if user confirms
-  gum confirm "Commit changes?" && git commit -m "$SUMMARY" -m "$DESCRIPTION"
+  gum confirm "Commit changes?" && git commit -m "$SUMMARY" -m "$DESCRIPTION" || exit
 else
   # Commit these changes if user confirms
-  gum confirm "Commit changes?" && git commit -m "$SUMMARY"
+  gum confirm "Commit changes?" && git commit -m "$SUMMARY" || exit
 fi
 
 # If a there is a remote then offer push
 if git config --get remote.origin.url &>/dev/null; then
+  echo
   gum confirm "Push changes?" && git push
 fi
