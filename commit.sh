@@ -50,3 +50,8 @@ else
   # Commit these changes if user confirms
   gum confirm "Commit changes?" && git commit -m "$SUMMARY"
 fi
+
+# If a there is a remote then offer push
+if git config --get remote.origin.url &>/dev/null; then
+  gum confirm "Push changes?" && git push
+fi
