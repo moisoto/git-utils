@@ -25,6 +25,13 @@ if ! git rev-parse --is-inside-work-tree &> /dev/null; then
   exit
 fi
 
+if git diff --cached --quiet; then
+  MSG="Error: No staged changes detected."
+  echo "{{ Foreground \"#ff555555\" \"$MSG\" }}" | gum format -t template
+  echo
+  exit
+fi
+
 TYPE=$(gum choose "fix" "feat" "docs" "style" "refactor" "test" "chore" "revert")
 SCOPE=$(gum input --placeholder "scope")
 
