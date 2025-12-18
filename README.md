@@ -89,6 +89,7 @@ You will be asked for the following:
 - An optional **detailed description**.
 
 After entering this information, it will be shown for review and you will be asked to confirm if you wish to perform the commit.
+Additionally if the repo has a remote it will ask if you want to push into it.
 
 > **Note:**
 >     This command requires gum to be installed on your system.<br>

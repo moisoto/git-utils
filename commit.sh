@@ -58,7 +58,7 @@ else
   gum confirm "Commit changes?" && git commit -m "$SUMMARY" || exit
 fi
 
-# If a there is a remote then offer push
+# If there is a remote then offer push
 if git config --get remote.origin.url &>/dev/null; then
   echo
   gum confirm "Push changes?" && git push
