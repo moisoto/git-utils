@@ -1,7 +1,7 @@
 #!/bin/zsh
 
 if [[ $# -ne 1 ]]; then
-  echo "Please specify a filename" 
+  echo "Please specify a filename"
   exit 1
 fi
 

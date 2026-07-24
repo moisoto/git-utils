@@ -1,4 +1,4 @@
-#!/bin/zsh    
+#!/bin/zsh
 
 echo "WARNING!!! This will undo the last commit and reset the working directory and stage area."
 echo "This means any changes to files will be reverted! You will lose the changes made on the last commit and any changes after it."

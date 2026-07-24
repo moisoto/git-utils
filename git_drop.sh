@@ -1,4 +1,4 @@
-#!/bin/zsh    
+#!/bin/zsh
 
 echo "This will undo any uncommited changes to files."
 read -q "REPLY?Do you want to continue? (y/n): "

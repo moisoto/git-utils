@@ -58,6 +58,13 @@ Syntax: `git slog`
 
 A custom git log with stats info and graph format.
 
+### git cstat
+
+Syntax: `git cstat | less -R`
+
+A git status alias for use with `less -R`.
+This will allow to keep colored output when paging the output.
+
 ### git undo
 
 Syntax: `git undo`

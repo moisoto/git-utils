@@ -4,6 +4,6 @@ if [[ -z "$@" ]]; then
    exit 1
 fi
 for FILE in $@; do
-  git diff -U$(wc -l "${FILE}" | awk '{print $1}') "${FILE}"
+  git diff --color --ws-error-highlight=all -U$(wc -l "${FILE}" | awk '{print $1}') "${FILE}" | less -R
 done
 exit 0
