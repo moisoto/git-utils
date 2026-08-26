@@ -165,7 +165,7 @@ if (( has_remote )); then
 
   if [[ $current_branch != "$default_branch" ]]; then
     if [[ -n $(git status --porcelain) ]]; then
-      printf 'Error: must switch from "%s" to the default branch "%s",\n' \
+      printf 'Error: must switch from "%s" to the base branch "%s",\n' \
         "${current_branch:-detached HEAD}" "$default_branch" >&2
       print -u2 "but the working tree has uncommitted changes."
       print -u2 "Commit or stash them before trying again."
@@ -174,7 +174,7 @@ if (( has_remote )); then
 
     if git show-ref --verify --quiet "refs/heads/$default_branch"; then
       git switch --quiet -- "$default_branch" || {
-        printf 'Error: could not switch to default branch "%s".\n' \
+        printf 'Error: could not switch to base branch "%s".\n' \
           "$default_branch" >&2
         exit 1
       }
