@@ -2,13 +2,30 @@
 
 branch_name=$1
 
+tracked_remote()
+{
+  local branch
+  local remote
+
+  branch=$(git branch --show-current) || return 1
+  [[ -n $branch ]] || return 1
+
+  remote=$(git config --get "branch.${branch}.remote") || return 1
+  [[ -n $remote && $remote != "." ]] || return 1
+
+  git remote get-url "$remote" >/dev/null 2>&1 || return 1
+
+  print -r -- "$remote"
+}
+
 default_branch()
 {
+  local remote=$1
   local ref
   local branch
 
-  ref=$(git ls-remote --symref origin HEAD 2>/dev/null) || {
-    print -u2 "Error: unable to query origin"
+  ref=$(git ls-remote --symref "$remote" HEAD 2>/dev/null) || {
+    print -u2 "Error: unable to query $remote"
     return 1
   }
 
@@ -25,16 +42,136 @@ default_branch()
   print -n -- "$branch"
 }
 
+validate()
+{
+  local branch=$1
+  local remote=$2
+  local remote_status
+
+  # Validate the branch name first
+  if ! git check-ref-format --branch "$branch" >/dev/null 2>&1; then
+      printf 'Error: "%s" is not a valid branch name.\n' "$branch" >&2
+      return 1
+  fi
+
+  # Check whether it exists locally
+  if git show-ref --verify --quiet "refs/heads/$branch"; then
+      printf 'Error: branch "%s" already exists locally.\n' "$branch" >&2
+      return 1
+  fi
+
+  # Check only if the remote name was passed
+  if [[ -n "$remote" ]]; then
+    # Check the remote directly
+    git ls-remote --exit-code --heads "$remote" \
+        "refs/heads/$branch" >/dev/null 2>&1
+
+    remote_status=$?
+
+    case "$remote_status" in
+        0)
+            printf 'Error: branch "%s" already exists on remote "%s".\n' \
+                "$branch" "$remote" >&2
+            return 1
+            ;;
+        2)
+            # The branch does not exist remotely
+            ;;
+        *)
+            printf 'Error: could not check remote "%s".\n' "$remote" >&2
+            return 1
+            ;;
+    esac
+  fi
+}
+
+#===================
+# Script starts here
+#===================
+
 if [[ -z $branch_name ]]; then
   print -u2 "Must specify branch name"
   exit 1
 fi
 
-default_branch=$(default_branch) || exit 1
+if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  print -u2 "Error: not inside a Git working tree."
+  exit 1
+fi
 
-# Switch to the default branch and fast-forward
-git switch -- "$default_branch" || exit 1
-git pull --ff-only || exit 1
+typeset has_remote=0
+typeset remote_name
 
-# Create the branch
-git switch -c "$branch_name"
+if remote_name=$(tracked_remote); then
+  has_remote=1
+  printf 'Using remote "%s", tracked by the current branch.\n' "$remote_name"
+else
+  has_remote=0
+  remote_name=""
+fi
+
+validate "$branch_name" "$remote_name" || exit 1
+
+if (( has_remote )); then
+  default_branch=$(default_branch "$remote_name") || exit 1
+  current_branch=$(git branch --show-current) || exit 1
+
+  if [[ $current_branch != "$default_branch" ]]; then
+    if [[ -n $(git status --porcelain) ]]; then
+      printf 'Error: must switch from "%s" to the default branch "%s",\n' \
+        "${current_branch:-detached HEAD}" "$default_branch" >&2
+      print -u2 "but the working tree has uncommitted changes."
+      print -u2 "Commit or stash them before trying again."
+      exit 1
+    fi
+
+    if git show-ref --verify --quiet "refs/heads/$default_branch"; then
+      git switch --quiet -- "$default_branch" || {
+        printf 'Error: could not switch to default branch "%s".\n' \
+          "$default_branch" >&2
+        exit 1
+      }
+    else
+      git fetch --quiet "$remote_name" || {
+        printf 'Error: could not fetch remote "%s".\n' "$remote_name" >&2
+        exit 1
+      }
+
+      git switch --quiet --track "$remote_name/$default_branch" || {
+        printf 'Error: could not create local tracking branch for "%s/%s".\n' \
+          "$remote_name" "$default_branch" >&2
+        exit 1
+      }
+    fi
+  fi
+
+  git pull --quiet --ff-only "$remote_name" "$default_branch" || {
+    printf 'Error: could not fast-forward branch "%s" from remote "%s".\n' \
+      "$default_branch" "$remote_name" >&2
+    exit 1
+  }
+else
+  print "The current branch does not track a remote; using local-only mode."
+  print "Creating the branch from the currently checked-out commit."
+fi
+
+# Switch quietly and print a similar but more verbose message later
+git switch --quiet -c "$branch_name" || {
+  printf 'Error: could not create branch "%s".\n' "$branch_name" >&2
+  exit 1
+}
+
+if (( has_remote )); then
+  # Push quietly and print a message later
+  #git push --quiet -u "$remote_name" "$branch_name" || {
+  git push -u "$remote_name" "$branch_name" || {
+    printf 'Error: branch "%s" was created locally but could not be pushed to "%s".\n' \
+      "$branch_name" "$remote_name" >&2
+    exit 1
+  }
+
+  printf "Created branch '%s' and configured it to track '%s/%s'.\n" \
+    "$branch_name" "$remote_name" "$branch_name"
+else
+  printf "Switched to the new local branch '%s'.\n" "$branch_name"
+fi
