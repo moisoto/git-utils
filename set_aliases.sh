@@ -11,6 +11,11 @@ git config --global alias.clog  'log --pretty="format:%C(auto)%h %ad: %s" --date
 git config --global alias.slog  'log --graph --pretty="%Cred%h%Creset -%C(auto)%d%Creset %s %Cgreen(%ar) %C(bold blue)<%an>%Creset" --stat'
 git config --global alias.cstat '-c color.ui=always status'
 
+# Make sure ~/.local/bin exists
+mkdir -p "$HOME/.local/bin"
+
+# Symlink git-new-branch into ~/.local/bin
+ln -sf "../../git-utils/git-new-branch" "$HOME/.local/bin/git-new-branch"
 
 read -q "REPLY?Do you want to add the 'git hundo' alias? (y/n): "
 echo # move to a new line
@@ -23,6 +28,13 @@ fi
 echo # move to a new line
 echo "The following git aliases are now present on your system:"
 git config --get-regexp '^alias\.' | sed 's/^alias\.//' | awk '{print "git " $1}'
+echo
+
+echo "The following external commands are now available:"
+for cmd in "$HOME"/.local/bin/git-*; do
+  [[ -x $cmd ]] || continue
+  print "git ${${cmd:t}#git-}"
+done
 
 # Run the following command to check your current global git configuration:
 # git config --global --list
