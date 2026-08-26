@@ -2,6 +2,37 @@
 
 branch_name=$1
 
+tracked_remote_branch()
+{
+  local expected_remote=$1
+  local current_branch
+  local configured_remote
+  local merge_ref
+  local branch
+
+  current_branch=$(git branch --show-current) || return 1
+  [[ -n $current_branch ]] || return 1
+
+  configured_remote=$(
+    git config --get "branch.${current_branch}.remote"
+  ) || return 1
+
+  [[ $configured_remote == "$expected_remote" ]] || return 1
+
+  merge_ref=$(
+    git config --get "branch.${current_branch}.merge"
+  ) || return 1
+
+  [[ $merge_ref == refs/heads/* ]] || return 1
+
+  branch=${merge_ref#refs/heads/}
+
+  git ls-remote --exit-code --heads "$expected_remote" \
+    "refs/heads/$branch" >/dev/null 2>&1 || return 1
+
+  print -r -- "$branch"
+}
+
 tracked_remote()
 {
   local branch
@@ -25,21 +56,37 @@ default_branch()
   local branch
 
   ref=$(git ls-remote --symref "$remote" HEAD 2>/dev/null) || {
-    print -u2 "Error: unable to query $remote"
+    print -u2 "Error: unable to query remote \"$remote\"."
     return 1
   }
 
   branch=$(
     printf '%s\n' "$ref" |
-      awk '/^ref:/ {sub("refs/heads/", "", $2); print $2}'
+      awk '/^ref:/ {
+        sub("^refs/heads/", "", $2)
+        print $2
+        exit
+      }'
   )
 
-  if [[ -z $branch ]]; then
-    print -u2 "Error: unable to determine default branch"
-    return 1
+  if [[ -n $branch ]]; then
+    print -r -- "$branch"
+    return 0
   fi
 
-  print -n -- "$branch"
+  branch=$(tracked_remote_branch "$remote") || {
+    printf 'Error: remote "%s" does not advertise a default branch,\n' \
+      "$remote" >&2
+    print -u2 "and the current branch has no usable upstream branch."
+    return 1
+  }
+
+  printf 'Warning: remote "%s" does not advertise a default branch;\n' \
+    "$remote" >&2
+  printf 'using the current branch upstream "%s/%s" as the base.\n' \
+    "$remote" "$branch" >&2
+
+  print -r -- "$branch"
 }
 
 validate()
@@ -162,16 +209,11 @@ git switch --quiet -c "$branch_name" || {
 }
 
 if (( has_remote )); then
-  # Push quietly and print a message later
-  #git push --quiet -u "$remote_name" "$branch_name" || {
   git push -u "$remote_name" "$branch_name" || {
     printf 'Error: branch "%s" was created locally but could not be pushed to "%s".\n' \
       "$branch_name" "$remote_name" >&2
     exit 1
   }
-
-  printf "Created branch '%s' and configured it to track '%s/%s'.\n" \
-    "$branch_name" "$remote_name" "$branch_name"
 else
   printf "Switched to the new local branch '%s'.\n" "$branch_name"
 fi
