@@ -1,0 +1,40 @@
+#!/bin/zsh
+
+branch_name=$1
+
+default_branch()
+{
+  local ref
+  local branch
+
+  ref=$(git ls-remote --symref origin HEAD 2>/dev/null) || {
+    print -u2 "Error: unable to query origin"
+    return 1
+  }
+
+  branch=$(
+    printf '%s\n' "$ref" |
+      awk '/^ref:/ {sub("refs/heads/", "", $2); print $2}'
+  )
+
+  if [[ -z $branch ]]; then
+    print -u2 "Error: unable to determine default branch"
+    return 1
+  fi
+
+  print -n -- "$branch"
+}
+
+if [[ -z $branch_name ]]; then
+  print -u2 "Must specify branch name"
+  exit 1
+fi
+
+default_branch=$(default_branch) || exit 1
+
+# Switch to the default branch and fast-forward
+git switch -- "$default_branch" || exit 1
+git pull --ff-only || exit 1
+
+# Create the branch
+git switch -c "$branch_name"
