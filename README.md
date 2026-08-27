@@ -13,7 +13,7 @@ In order to use these scripts open a terminal Window and run the following comma
 ```shell
 cd ~/
 git clone https://github.com/moisoto/git-utils.git
-~/git-utils/set_aliases.sh
+~/git-utils/setup-git-utils.sh
 ```
 
 ## Commands
@@ -130,5 +130,5 @@ cd ~/git-utils
 # Assuming you cloned the script (not a .zip download)
 git pull
 
-~/git-utils/set_aliases.sh
+~/git-utils/setup-git-utils.sh
 ```
