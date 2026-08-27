@@ -95,9 +95,9 @@ This command will do the following:
 
 ### gcommit
 
-Syntax: `gcommit`
+Syntax:  `git gum-commit`
 
-This is the only command that is intended to be used directly and not as a git external command.
+Alternatively you can use a shorter command: **`gcommit`**
 
 Use this interactive command when you want to make a commit with an additional detailed multiline description.
 

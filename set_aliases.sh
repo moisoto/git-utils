@@ -78,6 +78,8 @@ ln -sf "../../$expected_directory/git-tt" "$HOME/.local/bin/git-tt"
 ln -sf "../../$expected_directory/git-drop" "$HOME/.local/bin/git-drop"
 ln -sf "../../$expected_directory/git-tags" "$HOME/.local/bin/git-tags"
 ln -sf "../../$expected_directory/git-new-branch" "$HOME/.local/bin/git-new-branch"
+ln -sf "../../$expected_directory/commit.sh" "$HOME/.local/bin/git-gum-commit"
+ln -sf "../../$expected_directory/commit.sh" "$HOME/.local/bin/gcommit"
 
 read -q "REPLY?Do you want to add the 'git hundo' alias? (y/n): "
 echo # move to a new line
