@@ -1,33 +1,79 @@
-#!/bin/zsh
+#!/usr/bin/env zsh
+
+check_existing_aliases()
+{
+  local alias_names=(df tt drop tags hundo)
+  local existing_aliases=()
+  local alias_name alias_value
+  local reply
+
+  for alias_name in "${alias_names[@]}"; do
+    if git config --global --get "alias.${alias_name}" >/dev/null 2>&1; then
+      existing_aliases+=("$alias_name")
+    fi
+  done
+
+  # Exit if not aliases found
+  (( ${#existing_aliases[@]} == 0 )) && return 0
+
+  print "The following global Git aliases already exist:"
+
+  for alias_name in "${existing_aliases[@]}"; do
+    alias_value=$(git config --global --get "alias.${alias_name}")
+    print -r -- "  ${alias_name} = ${alias_value}"
+  done
+
+  echo
+  echo "Maybe from a previous version of these git-utils?"
+  read "reply?May I delete these aliases? [y/N] "
+
+  case "$reply" in
+    [yY] | [yY][eE][sS])
+      for alias_name in "${existing_aliases[@]}"; do
+        git config --global --unset-all "alias.${alias_name}"
+      done
+      print "Existing aliases deleted."
+      return 0
+      ;;
+    *)
+      return 1
+      ;;
+  esac
+}
+
+if ! check_existing_aliases; then
+  echo "Aborting due to existing aliases."
+  exit 1
+fi
 
 # These commands need only be run once to configure the git aliases in your global config
 # Notice the scripts are contained on ~/git-utils folder
-git config --global alias.df    '! [ \"$GIT_PREFIX\" != \"\" ] && cd $GIT_PREFIX; ~/git-utils/git_df.sh'
-git config --global alias.tt    '! [ \"$GIT_PREFIX\" != \"\" ] && cd $GIT_PREFIX; ~/git-utils/git_tt.sh'
-git config --global alias.drop  '! [ \"$GIT_PREFIX\" != \"\" ] && cd $GIT_PREFIX; ~/git-utils/git_drop.sh'
-git config --global alias.tags  '! ~/git-utils/git_tags.sh'
 git config --global alias.undo  'revert HEAD'
+git config --global alias.cstat '-c color.ui=always status'
 git config --global alias.clog  'log --pretty="format:%C(auto)%h %ad: %s" --date=short --name-only'
 git config --global alias.slog  'log --graph --pretty="%Cred%h%Creset -%C(auto)%d%Creset %s %Cgreen(%ar) %C(bold blue)<%an>%Creset" --stat'
-git config --global alias.cstat '-c color.ui=always status'
 
 # Make sure ~/.local/bin exists
 mkdir -p "$HOME/.local/bin"
 
 # Symlink git-new-branch into ~/.local/bin
+ln -sf "../../git-utils/git-df" "$HOME/.local/bin/git-df"
+ln -sf "../../git-utils/git-tt" "$HOME/.local/bin/git-tt"
+ln -sf "../../git-utils/git-drop" "$HOME/.local/bin/git-drop"
+ln -sf "../../git-utils/git-tags" "$HOME/.local/bin/git-tags"
 ln -sf "../../git-utils/git-new-branch" "$HOME/.local/bin/git-new-branch"
 
 read -q "REPLY?Do you want to add the 'git hundo' alias? (y/n): "
 echo # move to a new line
 if [[ "$REPLY" =~ ^[Yy]$ ]] ; then
-   git config --global alias.hundo '! [ \"$GIT_PREFIX\" != \"\" ] && cd $GIT_PREFIX; ~/git-utils/git_hundo.sh'
+  ln -sf "../../git-utils/git-hundo" "$HOME/.local/bin/git-hundo"
 else
-   echo "Skipping alias hundo"
+  echo "Skipping alias hundo"
 fi
 
 echo # move to a new line
 echo "The following git aliases are now present on your system:"
-git config --get-regexp '^alias\.' | sed 's/^alias\.//' | awk '{print "git " $1}'
+git config --global --get-regexp '^alias\.' | sed 's/^alias\.//' | awk '{print "git " $1}'
 echo
 
 echo "The following external commands are now available:"
