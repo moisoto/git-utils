@@ -1,5 +1,21 @@
 #!/usr/bin/env zsh
 
+
+expected_directory="git-utils"
+expected_path="${HOME}/$expected_directory"
+current_path="${PWD:A}"
+script_name="${0:t}"
+
+if [[ "$current_path" != "${expected_path:A}" ]]; then
+  print -u2 "Error: this script must be run from ~/$expected_directory."
+  print -u2 "Current directory: $current_path"
+  print -u2
+  print -u2 "Move the $expected_directory folder to your home directory, then run:"
+  print -u2 "  cd ~/$expected_directory"
+  print -u2 "  ./$script_name"
+  exit 1
+fi
+
 check_existing_aliases()
 {
   local alias_names=(df tt drop tags hundo)
@@ -57,16 +73,16 @@ git config --global alias.slog  'log --graph --pretty="%Cred%h%Creset -%C(auto)%
 mkdir -p "$HOME/.local/bin"
 
 # Symlink git-new-branch into ~/.local/bin
-ln -sf "../../git-utils/git-df" "$HOME/.local/bin/git-df"
-ln -sf "../../git-utils/git-tt" "$HOME/.local/bin/git-tt"
-ln -sf "../../git-utils/git-drop" "$HOME/.local/bin/git-drop"
-ln -sf "../../git-utils/git-tags" "$HOME/.local/bin/git-tags"
-ln -sf "../../git-utils/git-new-branch" "$HOME/.local/bin/git-new-branch"
+ln -sf "../../$expected_directory/git-df" "$HOME/.local/bin/git-df"
+ln -sf "../../$expected_directory/git-tt" "$HOME/.local/bin/git-tt"
+ln -sf "../../$expected_directory/git-drop" "$HOME/.local/bin/git-drop"
+ln -sf "../../$expected_directory/git-tags" "$HOME/.local/bin/git-tags"
+ln -sf "../../$expected_directory/git-new-branch" "$HOME/.local/bin/git-new-branch"
 
 read -q "REPLY?Do you want to add the 'git hundo' alias? (y/n): "
 echo # move to a new line
 if [[ "$REPLY" =~ ^[Yy]$ ]] ; then
-  ln -sf "../../git-utils/git-hundo" "$HOME/.local/bin/git-hundo"
+  ln -sf "../../$expected_directory/git-hundo" "$HOME/.local/bin/git-hundo"
 else
   echo "Skipping alias hundo"
 fi
