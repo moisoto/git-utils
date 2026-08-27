@@ -1,6 +1,6 @@
 #!/bin/zsh
 
-echo "This will undo any uncommited changes to files."
+echo "This will undo any uncommited changes to tracked files."
 read -q "REPLY?Do you want to continue? (y/n): "
 echo  # move to a new line
 if [[ ! "$REPLY" =~ ^[Yy]$ ]] ; then
@@ -8,4 +8,5 @@ if [[ ! "$REPLY" =~ ^[Yy]$ ]] ; then
    exit
 fi
 echo "Dropping changes..."
-git stash && git stash drop
+# Discard all staged and unstaged changes to tracked files across the entire repository.
+git restore --source=HEAD --staged --worktree -- :/

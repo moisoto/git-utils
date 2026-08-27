@@ -1,0 +1,20 @@
+.TH GIT-DF 1
+.SH NAME
+git-df \- perform a git diff of a given file showing the entire file instead of limited context
+.SH SYNOPSIS
+.B git df
+.I <filename>
+.RI [ <filename2> ...]
+.SH DESCRIPTION
+git-df performs a git diff of a given file that will show the entire file instead of just the context around the file differences.
+.PP
+You can specify more than one file explicitly or use wilcards, however this command is most useful when reviewing a single file.
+.SH EXAMPLES
+.PP
+Show differences for file named
+.BR some-file :
+.RS
+.nf
+git df some-file
+.fi
+.RE

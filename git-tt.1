@@ -1,0 +1,18 @@
+.TH GIT-TT 1
+.SH NAME
+git-tt \- trim all trailing spaces from a given regular file
+.SH SYNOPSIS
+.BI "git tt " filename
+.SH DESCRIPTION
+Some editors will leave trailing spaces after the end-of-line as you format your commands, this will normally have no ill effects but when running the git diff command it will show these trailing spaces in red. This is just to let you know there are spaces there.
+.PP
+If it bothers you to see these ugly red marks, just use this command on your file.
+.SH EXAMPLES
+.PP
+Trim trailing spaces for file named
+.BR file-to-trim :
+.RS
+.nf
+git tt file-to-trim
+.fi
+.RE

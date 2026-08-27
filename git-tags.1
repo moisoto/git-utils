@@ -1,0 +1,52 @@
+.TH GIT-TAGS 1
+.SH NAME
+git-tags \- display a list of tags
+.SH SYNOPSIS
+.B git tags
+.br
+.B git tags
+.BI \-n " max-tags"
+.br
+.B git tags
+.BI \-\-max-tags= max-tags
+.br
+.B git tags
+.BI \-\-max-tags " max-tags"
+.SH DESCRIPTION
+Lists tags from the repository, including remote tags.
+.PP
+Tags are ordered from newest to oldest.
+.PP
+The number of displayed tags can be limited using the
+.B \-n
+or
+.B \-\-max-tags
+option.
+.SH OPTIONS
+.TP
+.BI \-n " max-tags"
+.TQ
+.BI \-\-max-tags= max-tags
+.TQ
+.BI \-\-max-tags " max-tags"
+Limit the output to
+.I max-tags
+tags.
+.SH EXAMPLES
+.PP
+List all tags:
+.RS
+.nf
+git tags
+.fi
+.RE
+
+.PP
+List the five most recent tags:
+.RS
+.nf
+git tags \-n 5
+git tags \-\-max-tags=5
+git tags \-\-max-tags 5
+.fi
+.RE

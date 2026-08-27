@@ -1,6 +1,5 @@
 #!/usr/bin/env zsh
 
-
 expected_directory="git-utils"
 expected_path="${HOME}/$expected_directory"
 current_path="${PWD:A}"
@@ -57,6 +56,14 @@ check_existing_aliases()
   esac
 }
 
+create_man_pages()
+{
+  # Make sure man1 folder exists
+  mkdir -p ~/.local/share/man/man1
+
+  cp git*.1 ~/.local/share/man/man1/
+}
+
 if ! check_existing_aliases; then
   echo "Aborting due to existing aliases."
   exit 1
@@ -78,16 +85,12 @@ ln -sf "../../$expected_directory/git-tt" "$HOME/.local/bin/git-tt"
 ln -sf "../../$expected_directory/git-drop" "$HOME/.local/bin/git-drop"
 ln -sf "../../$expected_directory/git-tags" "$HOME/.local/bin/git-tags"
 ln -sf "../../$expected_directory/git-new-branch" "$HOME/.local/bin/git-new-branch"
+ln -sf "../../$expected_directory/git-hundo" "$HOME/.local/bin/git-hundo"
 ln -sf "../../$expected_directory/commit.sh" "$HOME/.local/bin/git-gum-commit"
 ln -sf "../../$expected_directory/commit.sh" "$HOME/.local/bin/gcommit"
 
-read -q "REPLY?Do you want to add the 'git hundo' alias? (y/n): "
-echo # move to a new line
-if [[ "$REPLY" =~ ^[Yy]$ ]] ; then
-  ln -sf "../../$expected_directory/git-hundo" "$HOME/.local/bin/git-hundo"
-else
-  echo "Skipping alias hundo"
-fi
+# Creating man-pages
+create_man_pages
 
 echo # move to a new line
 echo "The following git aliases are now present on your system:"

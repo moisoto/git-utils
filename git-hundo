@@ -1,14 +1,33 @@
 #!/bin/zsh
 
-echo "WARNING!!! This will undo the last commit and reset the working directory and stage area."
-echo "This means any changes to files will be reverted! You will lose the changes made on the last commit and any changes after it."
-echo "" # Skip a Line
-echo "WARNING!!! DO NOT USE THIS COMMAND IF THE COMMIT YOU ARE UNDOING IS ALREADY PUSHED TO A REMOTE!!!"
-read -q "REPLY?Do you want to continue? (y/n): "
-echo  # move to a new line
-if [[ ! "$REPLY" =~ ^[Yy]$ ]] ; then
-   echo "Aborting..."
-   exit
+if ! git fetch --all --prune --quiet; then
+  echo "Unable to check the latest remote state. Aborting."
+  exit 1
 fi
+
+if [[ -n "$(git branch --remotes --contains HEAD)" ]]; then
+  echo "The current commit has already been pushed to a remote branch."
+  echo "This command is not intended to reset pushed commits."
+  echo "No changes were made."
+  exit 1
+fi
+
+echo "WARNING: This will move the current branch back by one commit."
+echo "The current commit and all uncommitted changes to tracked files will be discarded."
+echo "Both the working tree and staging area will be reset to match the previous commit."
+echo "" # Skip a Line
+
+read -q "REPLY?Do you want to continue? Enter uppercase Y to confirm: "
+echo
+
+if [[ "$REPLY" != "Y" ]]; then
+  if [[ "$REPLY" == "y" ]]; then
+    echo "Must press uppercase Y. Aborting..."
+  else
+    echo "Aborting..."
+  fi
+  exit 1
+fi
+
 echo "Dropping changes..."
 git reset --hard HEAD~

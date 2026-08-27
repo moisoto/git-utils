@@ -1,0 +1,31 @@
+.TH GIT-HUNDO 1
+.SH NAME
+git-hundo \- discard the current commit and all uncommitted changes to tracked files
+.SH SYNOPSIS
+.BI "git hundo " filename
+.SH DESCRIPTION
+Discards the current commit by moving the current branch back by one commit
+and resetting the working tree and staging area to match the previous commit.
+Use with care. The changes introduced by the current commit and all
+uncommitted changes to tracked files are discarded.
+.PP
+The command refuses to run if the current commit is found on any branch of a
+configured remote. Rewriting a published branch would normally cause a
+subsequent push to be rejected as non-fast-forward and could require a force
+push.
+.PP
+This command is intended for rare cases in which the current commit should be
+removed from the branch history. In most cases, preserving the existing
+history by running
+.B git undo
+(an alias for
+.BR "git revert HEAD" )
+is strongly recommended.
+.SH EXAMPLES
+.PP
+Discard the current commit and uncommitted changes to tracked files:
+.RS
+.nf
+git hundo
+.fi
+.RE
