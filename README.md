@@ -2,7 +2,7 @@
 
 These are some utilities for use when working with git that may be usefull to other people.
 
-The scripts are not intended to be called directly, they are called by git aliases you should define by running the included script called `set_aliases.sh`.
+Some are defined as aliases, others are scripts that git will run automatically as external commands.
 
 It is assumed you have the scripts located on the folder ~/git-utils (cloning the repository on your home directory will acomplish this).
 
@@ -81,9 +81,23 @@ Do this ONLY when the commit has not been pushed to a remote. Otherwise you will
 
 I'm including this here for rare cases where you don't want to have the last commit on the commit history. For most cases the use of `git undo` is STRONGLY recommended instead.
 
+### git new-branch
+
+Syntax: `git new-branch branch-name`
+
+This command will do the following:
+
+- Creates a new Git branch using the name provided.
+- If a remote is available:
+  - Creates the new branch.
+  - Pushes it to the remote and configures tracking.
+- If no remote is available, creates the branch locally from the current commit.
+
 ### gcommit
 
 Syntax: `gcommit`
+
+This is the only command that is intended to be used directly and not as a git external command.
 
 Use this interactive command when you want to make a commit with an additional detailed multiline description.
 
@@ -102,3 +116,19 @@ Additionally if the repo has a remote it will ask if you want to push into it.
 >     This command requires gum to be installed on your system.<br>
 >     Please visit https://github.com/charmbracelet/gum for more details.<br>
 >     If you have homebrew on macOS it can be installed by typing `brew install gum`
+
+## Updating from a earlier version
+
+A previous version of these scripts used aliases to call the scripts.
+If you want to update to the new scheme of external commands,
+please run the setup script again:
+
+```shell
+# Assuming you installed this on the recommended folder
+cd ~/git-utils
+
+# Assuming you cloned the script (not a .zip download)
+git pull
+
+~/git-utils/set_aliases.sh
+```
