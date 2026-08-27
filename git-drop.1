@@ -1,0 +1,19 @@
+.TH GIT-DROP 1
+.SH NAME
+git-drop \- discard all staged and unstaged changes to tracked files across the entire repository
+.SH SYNOPSIS
+.B git drop
+.SH DESCRIPTION
+This will drop all changes to tracked files on the working directory.
+.br
+Any uncomitted changes to tracked files will be reverted to the state of the last commit.
+.br
+This includes files that are staged for commit as well as those that are modified but not staged.
+.SH EXAMPLES
+.PP
+Drop all changes to tracked files:
+.RS
+.nf
+git drop
+.fi
+.RE

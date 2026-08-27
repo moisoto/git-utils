@@ -1,0 +1,23 @@
+.TH GIT-NEW-BRANCH 1
+.SH NAME
+git-new-branch \- create a new Git branch using the name provided
+.SH SYNOPSIS
+.BI "git new-branch " branch-name
+.SH DESCRIPTION
+Creates a new local branch from the current commit using the specified name.
+.PP
+The command then handles the remote as follows:
+.IP \(bu 2
+If a remote is available, it pushes the new branch and configures the local
+branch to track it.
+.IP \(bu 2
+If no remote is available, the branch remains local.
+.SH EXAMPLES
+.PP
+Create a new branch named
+.BR docs/update-readme :
+.RS
+.nf
+git new-branch docs/update-readme
+.fi
+.RE

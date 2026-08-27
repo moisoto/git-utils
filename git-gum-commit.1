@@ -1,0 +1,66 @@
+.TH GIT-GUM-COMMIT 1
+.SH NAME
+git-gum-commit \- create an interactive Conventional Commit with a detailed description
+.SH SYNOPSIS
+.B git gum-commit
+.SH DESCRIPTION
+This interactive command creates a commit message with an optional detailed,
+multi-line description. The message format is based on the Conventional
+Commits specification:
+.UR https://www.conventionalcommits.org/en/v1.0.0/#summary
+.UE
+.PP
+The command prompts for the following information:
+.TP
+.I type
+The type of change being committed, such as
+.BR fix ,
+.BR feat ,
+.BR docs ,
+or
+.BR revert .
+.TP
+.I scope
+An optional value identifying the part of the project being modified.
+.TP
+.I "short description"
+A concise, single-line summary of the change.
+.TP
+.I "detailed description"
+An optional multi-line explanation of the change. Insert a line break by
+pressing
+.BR Ctrl+J .
+.PP
+After the information has been entered, the complete commit message is
+displayed for review. The command asks for confirmation before creating the
+commit.
+.PP
+If the repository has a configured remote, the command also offers to push the
+new commit to it.
+.SH REQUIREMENTS
+This command requires
+.B gum
+to be installed. For installation instructions and additional information,
+visit:
+.UR https://github.com/charmbracelet/gum
+.UE
+.PP
+On macOS,
+.B gum
+can be installed using Homebrew:
+.RS
+.nf
+brew install gum
+.fi
+.RE
+.SH EXAMPLES
+.PP
+Create a Conventional Commit:
+.RS
+.nf
+git gum-commit
+.fi
+.RE
+.SH SEE ALSO
+.BR git-commit (1),
+.BR git-push (1)
