@@ -175,6 +175,19 @@ Some of these utilities are installed as external git commands.
 You can see a list of these using `git --help -a` on your terminal.
 They will appear in the corresponding section near the end of the output.
 
+Here is a list of the commands installed by Git-Utils:
+
+```
+External commands
+   df
+   drop
+   gum-commit
+   hundo
+   new-branch
+   tags
+   tt
+```
+
 To see the man page of a given external command:
 
 ```
