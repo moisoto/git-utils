@@ -63,7 +63,7 @@ A custom `git log` with stats info and graph format.
 
 Syntax: `git cstat`
 
-A git status alias for use with `less -R`.
+A `git status` alias for use with `less -R`.
 This will allow to keep colored output when paging the output.
 
 For example:
@@ -167,4 +167,26 @@ cd ~/git-utils
 git pull
 
 ~/git-utils/setup-git-utils.sh
+```
+
+## Displaying external commands help
+
+Some of these utilities are installed as external git commands.
+You can see a list of these using `git --help -a` on your terminal.
+They will appear in the corresponding section near the end of the output.
+
+To see the man page of a given external command:
+
+```
+git --help <command-name>
+```
+
+For example to see the man-page for the `new-branch` external command:
+
+```
+# Use git --help
+git --help new-branch
+
+# Or use man directly
+man git-new-branch
 ```
