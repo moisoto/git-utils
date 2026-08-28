@@ -34,7 +34,7 @@ Syntax: `git tt filename`
 
 Trims all trailing spaces from a given regular file.
 
-Some editors will leave trailing spaces after the end-of-line as you format your commands, this will normally have no ill effects but when running the git diff command it will show these trailing spaces in red. This is just to let you know there are spaces there.
+Some editors will leave trailing spaces after the end-of-line as you format your file, this will normally have no ill effects but when running the git diff command it will show these trailing spaces in red. This is just to let you know there are spaces there.
 
 If it bothers you to see these ugly red marks, just use this command on your file.
 
@@ -51,13 +51,13 @@ This includes files that are staged for commit as well as those that are modifie
 
 Syntax: `git clog`
 
-A compact format for git log. Shows filenames, the short hash & commit date.
+A compact format for `git log`. Shows filenames, the short hash & commit date.
 
 ### git slog
 
 Syntax: `git slog`
 
-A custom git log with stats info and graph format.
+A custom `git log` with stats info and graph format.
 
 ### git cstat
 
@@ -122,7 +122,7 @@ The number of displayed tags can be limited using the `-n` or `--max-tags` optio
 For example to limit the output to the newest 5 tags:
 
 ```shell
-git tag -n 5
+git tags -n 5
 ```
 
 ### git gum-commit
@@ -138,22 +138,26 @@ You will be asked for the following:
 
 - A **_category_** for the type of change you are commiting (Fix, Feature, Documentation, Revert, etc).
 - A **_scope_** (optional) to specify what you are modifying.
-- A **_short description_** with more details about the change. You can enter multiple lines by pressing **crtl+j**.
-- An optional **detailed description**.
+- A **_short description_** with more details about the change.
+- An optional **_multi-line explanation_** of the change. Insert a line break by pressing **Ctrl+J**.
 
-After entering this information, it will be shown for review and you will be asked to confirm if you wish to perform the commit.
-Additionally if the repo has a remote it will ask if you want to push into it.
+After the information has been entered, the complete commit message is
+displayed for review. The command asks for confirmation before creating the
+commit.
+
+If the repository has a configured remote, the command also offers to push the
+new commit to it.
 
 > **Note:**
->     This command requires gum to be installed on your system.<br>
+>     This command requires `gum` to be installed on your system.<br>
 >     Please visit https://github.com/charmbracelet/gum for more details.<br>
 >     If you have homebrew on macOS it can be installed by typing `brew install gum`
 
 ## Updating from a earlier version
 
-A previous version of these scripts used aliases to call the scripts.
+A previous version of the setup used aliases to call the scripts.
 If you want to update to the new scheme of external commands,
-please run the setup script again:
+please run setup again:
 
 ```shell
 # Assuming you installed this on the recommended folder
