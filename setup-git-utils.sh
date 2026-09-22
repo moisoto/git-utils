@@ -88,6 +88,7 @@ ln -sf "../../$expected_directory/git-new-branch" "$HOME/.local/bin/git-new-bran
 ln -sf "../../$expected_directory/git-hundo" "$HOME/.local/bin/git-hundo"
 ln -sf "../../$expected_directory/commit.sh" "$HOME/.local/bin/git-gum-commit"
 ln -sf "../../$expected_directory/commit.sh" "$HOME/.local/bin/gcommit"
+ln -sf "../../$expected_directory/git-new-wt" "$HOME/.local/bin/git-new-wt"
 
 # Creating man-pages
 create_man_pages

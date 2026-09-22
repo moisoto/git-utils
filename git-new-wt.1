@@ -1,0 +1,74 @@
+.TH GIT-NEW-WT 1
+.SH NAME
+git-new-wt \- create a Git worktree for a branch
+.SH SYNOPSIS
+.B git new-wt
+.I branch-name
+.SH DESCRIPTION
+.B git new-wt
+creates a Git worktree for the specified branch.
+.PP
+The worktree is created alongside the main repository, inside a directory
+with the same name as the main repository and the suffix
+.IR __worktrees .
+The worktree directory itself is named after the last component of the
+branch name.
+.PP
+For example, the branch
+.I feature/initial-release
+in a repository named
+.I project
+is checked out into:
+.PP
+.RS
+.nf
+\&../project__worktrees/initial-release
+.fi
+.RE
+.PP
+The command handles the specified branch as follows:
+.IP \(bu 2
+If the branch exists locally, the worktree is created from the local branch.
+.IP \(bu 2
+If the branch does not exist locally but exists on
+.IR origin ,
+the remote branch is fetched and a local tracking branch is created for
+the worktree.
+.IP \(bu 2
+If the branch does not exist locally or on
+.IR origin ,
+a new local branch is created. If the current branch is
+.I main
+or
+.IR master ,
+it is used as the base. Otherwise, the command offers to use
+.I main
+or
+.I master
+as the base when available. If neither is selected, the current branch
+is used.
+.PP
+When a base branch tracks a remote branch, the command checks its upstream
+status before creating the new branch and warns if the local branch is not
+up to date.
+.SH EXAMPLES
+Create a worktree for the branch
+.IR docs/update-readme :
+.PP
+.RS
+.nf
+git new-wt docs/update-readme
+.fi
+.RE
+.PP
+Assuming the main repository is named
+.IR project ,
+the resulting layout is:
+.PP
+.RS
+.nf
+project/
+project__worktrees/
+    update-readme/
+.fi
+.RE

@@ -1,0 +1,260 @@
+#!/bin/zsh
+
+setopt UNSET
+
+# Declare global variables
+typeset branch_name
+typeset git_common_dir
+typeset repo_root
+typeset worktree
+typeset worktree_dir
+typeset remote_name
+typeset base_branch
+typeset branch_exists_locally
+typeset branch_exists_remote
+
+check_base_branch()
+{
+  local branch=$1
+  local upstream
+  local remote
+  local ahead
+  local behind
+
+  # Does the branch have an upstream?
+  upstream=$(git rev-parse --abbrev-ref "${branch}@{upstream}" 2>/dev/null) ||
+    return 0
+
+  remote=$(git config --get "branch.${branch}.remote") || return 0
+
+  # Ignore local upstreams.
+  [[ -n "$remote" && "$remote" != "." ]] || return 0
+
+  print "Checking '$branch' against '$upstream'..."
+
+  git fetch "$remote" || {
+    print -u2 "Error: Failed to fetch remote '$remote'."
+    return 1
+  }
+
+  read ahead behind < <(
+    git rev-list --left-right --count \
+      "$branch...$upstream"
+  ) || return 1
+
+  if (( ahead == 0 && behind == 0 )); then
+    print "Branch '$branch' is up to date with '$upstream'."
+    return 0
+  fi
+
+  print -u2 "Warning: '$branch' is not up to date with '$upstream'."
+
+  if (( behind > 0 )); then
+    print -u2 "  Behind by $behind commit(s)."
+  fi
+
+  if (( ahead > 0 )); then
+    print -u2 "  Ahead by $ahead commit(s)."
+  fi
+
+  if read -q "?Continue using local '$branch' as the base? [y/N] "; then
+    print
+    return 0
+  else
+    print
+    print -u2 "Aborted."
+    return 1
+  fi
+}
+
+get_base_branch()
+{
+  local current_branch
+
+  current_branch=$(git branch --show-current) || return 1
+
+  if [[ -z "$current_branch" ]]; then
+    print -u2 "Error: HEAD is detached."
+    return 1
+  fi
+
+  # Already on main/master: use it.
+  if [[ "$current_branch" == "main" || "$current_branch" == "master" ]]; then
+    base_branch="$current_branch"
+    check_base_branch "$base_branch" || return 1
+    return 0
+  fi
+
+  # Prefer main over master when both exist.
+  if git show-ref --verify --quiet refs/heads/main; then
+    base_branch="main"
+  elif git show-ref --verify --quiet refs/heads/master; then
+    base_branch="master"
+  else
+    # No main/master branch: use the current branch.
+    base_branch="$current_branch"
+    return 0
+  fi
+
+  print "Current branch is '$current_branch'."
+  print "Repository also has '$base_branch'."
+
+  if read -q "?Use '$base_branch' as the base branch? [y/N] "; then
+    print
+    check_base_branch "$base_branch" || return 1
+  else
+    print
+    base_branch="$current_branch"
+  fi
+}
+
+validate_branch()
+{
+  local branch=$1
+  local remote_status
+
+  branch_exists_locally=0
+  branch_exists_remote=0
+  remote_name=""
+
+  # Validate the branch name first
+  if ! git check-ref-format --branch "$branch" >/dev/null 2>&1; then
+    printf 'Error: "%s" is not a valid branch name.\n' "$branch" >&2
+    return 1
+  fi
+
+  # Check whether it exists locally
+  if git show-ref --verify --quiet "refs/heads/$branch"; then
+    branch_exists_locally=1
+
+    if remote_name=$(git config --get "branch.${branch}.remote"); then
+      if [[ -n "$remote_name" && "$remote_name" != "." ]]; then
+        print "Branch '$branch' tracks remote '$remote_name'."
+      else
+        remote_name=""
+      fi
+    fi
+  else
+    if git remote get-url origin >/dev/null 2>&1; then
+      remote_name="origin"
+
+      # Check the remote directly
+      git ls-remote --exit-code --heads "$remote_name" \
+        "refs/heads/$branch" >/dev/null 2>&1
+
+      remote_status=$?
+
+      case "$remote_status" in
+        0)
+          branch_exists_remote=1
+          ;;
+        2)
+          # Branch doesn't exist on the remote
+          get_base_branch || return 1
+          ;;
+        *)
+          printf 'Error: could not check remote "%s".\n' "$remote_name" >&2
+          return 1
+          ;;
+      esac
+    else
+      # If branch doesn't exist locally
+      get_base_branch || return 1
+    fi
+  fi
+}
+
+#===================
+# Script starts here
+#===================
+
+if (( $# != 1 )); then
+  print -u2 "Usage: git new-wt <branch-name>"
+  exit 1
+fi
+
+branch_name=$1
+
+git_common_dir=$(git rev-parse --path-format=absolute --git-common-dir 2>/dev/null) || {
+  print -u2 "Error: Not inside a Git repository."
+  exit 1
+}
+
+validate_branch "$branch_name" || exit 1
+
+if (( ! branch_exists_locally && ! branch_exists_remote )); then
+  print "Using '$base_branch' as base branch."
+fi
+
+if (( branch_exists_remote )); then
+  print "Using remote '$remote_name'."
+fi
+
+if [[ "$git_common_dir" == */.git ]]; then
+    repo_root="${git_common_dir:h}"
+else
+    print -u2 "Error: Unable to determine main repository."
+    exit 1
+fi
+
+worktree="${branch_name:t}"
+worktree_dir="${repo_root}__worktrees/${worktree}"
+
+print "Worktree name derived from branch name: '$worktree'"
+
+if git worktree list --porcelain | grep -Fxq "worktree ${worktree_dir}"; then
+    print -u2 "Worktree already exists at: $worktree_dir"
+    exit 1
+fi
+
+if [[ -e "$worktree_dir" ]]; then
+    print -u2 "Path already exists: $worktree_dir"
+    exit 1
+fi
+
+if (( branch_exists_locally )); then
+  git worktree add \
+    "$worktree_dir" \
+    "$branch_name" || {
+      print -u2 "Failed to create worktree."
+      exit 1
+    }
+elif (( branch_exists_remote )); then
+  print "Branch exists remotely but not locally."
+
+  if read -q "?Fetch branch and create worktree from it? [y/N] "; then
+    print
+
+    # Update our remote-tracking reference.
+    git fetch "$remote_name" || {
+      print -u2 "Failed to fetch remote '$remote_name'."
+      exit 1
+    }
+
+    # Create the local branch, configure it to track the remote
+    # branch, and check it out directly in the new worktree.
+    git worktree add \
+      --track \
+      -b "$branch_name" \
+      "$worktree_dir" \
+      "$remote_name/$branch_name" || {
+        print -u2 "Failed to create worktree."
+        exit 1
+      }
+  else
+      print
+      print -u2 "Aborted."
+      exit 1
+  fi
+else
+  # Create the local branch
+  git worktree add \
+    -b "$branch_name" \
+    "$worktree_dir" \
+    "$base_branch" || {
+      print -u2 "Failed to create worktree."
+      exit 1
+    }
+fi
+
+print "Worktree created at: $worktree_dir"
